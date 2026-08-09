@@ -1,16 +1,14 @@
 'use client'
 
-import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 
-export default function Slider() {
-  const videoUrl = "/kiswa-hero.mp4"
-  const [videoReady, setVideoReady] = useState(false)
+const VIMEO_ID = '1213567493'
 
+export default function Slider() {
   return (
     <Link href="/collections" className="block relative w-full h-[360px] md:h-[560px] overflow-hidden bg-[#3d2e1e] group cursor-pointer">
-      {/* Fallback image */}
+      {/* Fallback image shown before iframe loads */}
       <Image
         src="/kiswa-hero-banner.png"
         alt="Kiswa – Premium Islamic Home Decor"
@@ -20,23 +18,21 @@ export default function Slider() {
         priority
       />
 
-      {/* Video layer */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-700"
-        style={{
-          zIndex: 2,
-          opacity: videoReady ? 1 : 0,
-          transition: 'opacity 0.8s ease, transform 0.7s ease',
-        }}
-        onCanPlay={() => setVideoReady(true)}
-      >
-        <source src={videoUrl} type="video/mp4" />
-      </video>
+      {/* Vimeo background video layer */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
+        <iframe
+          src={`https://player.vimeo.com/video/${VIMEO_ID}?autoplay=1&muted=1&loop=1&background=1&quality=auto`}
+          allow="autoplay; fullscreen"
+          className="w-full h-full"
+          style={{
+            border: 'none',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            transform: 'scale(1.05)',
+          }}
+        />
+      </div>
 
       {/* Subtle hover CTA */}
       <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 3 }}>
