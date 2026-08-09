@@ -11,7 +11,7 @@ const testimonials = [
     title: 'قماش سجادات الصلاة استثنائي',
     text: 'قماش سجادات الصلاة استثنائي والمسند مريح جداً. شكراً لكم على هذا المنتج الرائع.',
     rating: 5,
-    productImage: '/products/prayer-mat-premium.png',
+    productImage: '/products/prayer-mat-1.png',
   },
   {
     id: 2,

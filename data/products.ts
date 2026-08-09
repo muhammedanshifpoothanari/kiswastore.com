@@ -345,13 +345,7 @@ export const prayerMats: Product[] = [
     description: { en: 'Compact roll-up prayer mat, easy to carry.', ar: 'سجادة صلاة قابلة للف، سهلة الحمل.' },
     inStock: true, featured: true, sortOrder: 2,
   },
-  {
-    id: 'PM-LUXURY-COMFORT', slug: 'luxurious-comfortable-prayer-rug',
-    name: { en: 'Luxurious & Comfortable Prayer Rug – Multiple Colours', ar: 'سجادة صلاة فاخرة ومريحة – ألوان متعددة' },
-    price: 110, image: '/products/prayer-mat-premium.png', categoryId: 'CAT-prayer-mat',
-    description: { en: 'Luxurious and comfortable prayer rug in multiple colours.', ar: 'سجادة صلاة فاخرة ومريحة بألوان متعددة.' },
-    inStock: true, featured: true, sortOrder: 3,
-  },
+
   {
     id: 'PM-VISCOUS', slug: 'kiswa-viscous-prayer-mat',
     name: { en: 'Kiswa Viscous Prayer Mat', ar: 'سجادة صلاة فسكوز كسوة' },
