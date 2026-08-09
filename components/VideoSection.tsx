@@ -3,32 +3,59 @@
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
-const VIMEO_SRC = 'https://player.vimeo.com/video/1213567493?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1&dnt=1&quality=auto'
+const VIMEO_SRC = 'https://player.vimeo.com/video/1213567493?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1&dnt=1&quality=auto&api=1'
 
 export default function VideoSection() {
   const [loadVideo, setLoadVideo] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const [showVideo, setShowVideo] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
+  // Defer below-fold video until visible
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => setLoadVideo(true), 200)
+          setLoadVideo(true)
           observer.disconnect()
         }
       },
       { threshold: 0.1 }
     )
-    if (ref.current) observer.observe(ref.current)
+    if (containerRef.current) observer.observe(containerRef.current)
     return () => observer.disconnect()
+  }, [])
+
+  // Listen for Vimeo play event via postMessage
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (!e.origin.includes('vimeo.com')) return
+      try {
+        const data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data
+
+        if (data.event === 'ready') {
+          iframeRef.current?.contentWindow?.postMessage(
+            JSON.stringify({ method: 'addEventListener', value: 'play' }),
+            'https://player.vimeo.com'
+          )
+        }
+
+        if (data.event === 'play') {
+          setTimeout(() => setShowVideo(true), 300)
+        }
+      } catch {}
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
   }, [])
 
   return (
     <div
-      ref={ref}
+      ref={containerRef}
       className="relative rounded-2xl overflow-hidden shadow-lg w-full h-[600px] md:h-[800px] bg-[#3d2e1e]"
     >
-      {/* Video loads silently behind image */}
+      {/* Video loads behind image */}
       {loadVideo && (
         <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
           <div style={{
@@ -42,6 +69,7 @@ export default function VideoSection() {
             transform: 'translate(-50%, -50%)',
           }}>
             <iframe
+              ref={iframeRef}
               src={VIMEO_SRC}
               frameBorder="0"
               allow="autoplay; fullscreen; picture-in-picture"
@@ -53,10 +81,10 @@ export default function VideoSection() {
         </div>
       )}
 
-      {/* Image stays on top — fades out after Vimeo has time to start */}
+      {/* Image on top — fades only when Vimeo confirms playing */}
       <div
         className="absolute inset-0 transition-opacity duration-1000"
-        style={{ zIndex: 2, opacity: loadVideo ? 0 : 1, transitionDelay: loadVideo ? '2s' : '0s' }}
+        style={{ zIndex: 2, opacity: showVideo ? 0 : 1 }}
       >
         <Image
           src="/kiswa-hero-banner.png"
