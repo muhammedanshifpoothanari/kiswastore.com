@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" dir="ltr" className="bg-white scroll-smooth">
+    <html lang="en" dir="ltr" data-scroll-behavior="smooth" className="bg-white scroll-smooth">
       <body className="antialiased bg-white text-foreground font-sans">
         <LanguageProvider>
           <CartProvider>

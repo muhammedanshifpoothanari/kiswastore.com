@@ -20,6 +20,11 @@
   --background: #ffffff;
   --muted: #e0e0e0;
   --border: #d0d0d0;
+  scroll-behavior: smooth !important;
+}
+
+html {
+  scroll-behavior: smooth !important;
 }
 
 @keyframes scroll {
