@@ -2,13 +2,12 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-
-const VIMEO_ID = '1213567493'
+import Script from 'next/script'
 
 export default function Slider() {
   return (
     <Link href="/collections" className="block relative w-full h-[360px] md:h-[560px] overflow-hidden bg-[#3d2e1e] group cursor-pointer">
-      {/* Fallback image shown before iframe loads */}
+      {/* Fallback image shown instantly */}
       <Image
         src="/kiswa-hero-banner.png"
         alt="Kiswa – Premium Islamic Home Decor"
@@ -18,20 +17,31 @@ export default function Slider() {
         priority
       />
 
-      {/* Vimeo background video layer */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
-        <iframe
-          src={`https://player.vimeo.com/video/${VIMEO_ID}?autoplay=1&muted=1&loop=1&background=1&quality=auto`}
-          allow="autoplay; fullscreen"
-          className="w-full h-full"
-          style={{
-            border: 'none',
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform: 'scale(1.05)',
-          }}
-        />
+      {/* Vimeo background video – covers full hero */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 2 }}
+      >
+        {/* 16:9 ratio wrapper scaled up to cover any container */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '177.78vh', /* 16/9 * 100vh */
+          height: '100vh',
+          minWidth: '100%',
+          minHeight: '56.25vw', /* 9/16 * 100vw */
+          transform: 'translate(-50%, -50%)',
+        }}>
+          <iframe
+            src="https://player.vimeo.com/video/1213567493?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            title="MODEL 01"
+          />
+        </div>
       </div>
 
       {/* Subtle hover CTA */}
@@ -40,6 +50,8 @@ export default function Slider() {
           Explore Our Collections
         </div>
       </div>
+
+      <Script src="https://player.vimeo.com/api/player.js" strategy="lazyOnload" />
     </Link>
   )
 }

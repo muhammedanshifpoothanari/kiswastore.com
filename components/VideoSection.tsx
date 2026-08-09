@@ -1,8 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-
-const VIMEO_ID = '1213567493'
+import Script from 'next/script'
 
 export default function VideoSection() {
   return (
@@ -17,21 +16,34 @@ export default function VideoSection() {
         priority
       />
 
-      {/* Vimeo video layer — plays on top of image */}
-      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
-        <iframe
-          src={`https://player.vimeo.com/video/${VIMEO_ID}?autoplay=1&muted=1&loop=1&background=1&quality=auto`}
-          allow="autoplay; fullscreen"
-          className="w-full h-full"
-          style={{
-            border: 'none',
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transform: 'scale(1.05)',
-          }}
-        />
+      {/* Vimeo video — covers full section */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{ zIndex: 2 }}
+      >
+        {/* Scale up to cover container regardless of aspect ratio */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '177.78vh',
+          height: '100vh',
+          minWidth: '100%',
+          minHeight: '56.25vw',
+          transform: 'translate(-50%, -50%)',
+        }}>
+          <iframe
+            src="https://player.vimeo.com/video/1213567493?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
+            frameBorder="0"
+            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+            title="MODEL 01"
+          />
+        </div>
       </div>
+
+      <Script src="https://player.vimeo.com/api/player.js" strategy="lazyOnload" />
     </div>
   )
 }
