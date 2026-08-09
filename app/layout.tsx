@@ -8,7 +8,15 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'Kiswa - Premium Quality Islamic Products',
   description: 'Kiswa offers premium quality Islamic products, prayer mats, camping essentials, and elegant home furnishings. All the way from Makkah.',
-  generator: 'v0.app',
+  icons: {
+    icon: [
+      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icon.png', sizes: '192x192', type: 'image/png' }
+    ],
+    apple: [
+      { url: '/icon.png', sizes: '180x180', type: 'image/png' }
+    ]
+  }
 }
 
 export const viewport: Viewport = {
