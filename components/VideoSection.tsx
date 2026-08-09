@@ -1,7 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import Script from 'next/script'
+
+const YT_ID = 'a8udNoN_ZPQ'
 
 export default function VideoSection() {
   return (
@@ -16,12 +17,8 @@ export default function VideoSection() {
         priority
       />
 
-      {/* Vimeo video — covers full section */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 2 }}
-      >
-        {/* Scale up to cover container regardless of aspect ratio */}
+      {/* YouTube video — covers full section */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
         <div style={{
           position: 'absolute',
           top: '50%',
@@ -33,17 +30,15 @@ export default function VideoSection() {
           transform: 'translate(-50%, -50%)',
         }}>
           <iframe
-            src="https://player.vimeo.com/video/1213567493?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
+            src={`https://www.youtube.com/embed/${YT_ID}?autoplay=1&mute=1&loop=1&playlist=${YT_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&playsinline=1`}
             frameBorder="0"
-            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
+            allow="autoplay; fullscreen"
+            allowFullScreen
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            title="MODEL 01"
+            title="Kiswa Hero"
           />
         </div>
       </div>
-
-      <Script src="https://player.vimeo.com/api/player.js" strategy="lazyOnload" />
     </div>
   )
 }

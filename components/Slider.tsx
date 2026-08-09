@@ -2,7 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
-import Script from 'next/script'
+
+const YT_ID = 'a8udNoN_ZPQ'
 
 export default function Slider() {
   return (
@@ -12,34 +13,30 @@ export default function Slider() {
         src="/kiswa-hero-banner.png"
         alt="Kiswa – Premium Islamic Home Decor"
         fill
-        className="object-cover transition-transform duration-700 group-hover:scale-105"
+        className="object-cover"
         style={{ zIndex: 1 }}
         priority
       />
 
-      {/* Vimeo background video – covers full hero */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 2 }}
-      >
-        {/* 16:9 ratio wrapper scaled up to cover any container */}
+      {/* YouTube background video – covers full hero */}
+      <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 2 }}>
         <div style={{
           position: 'absolute',
           top: '50%',
           left: '50%',
-          width: '177.78vh', /* 16/9 * 100vh */
+          width: '177.78vh',
           height: '100vh',
           minWidth: '100%',
-          minHeight: '56.25vw', /* 9/16 * 100vw */
+          minHeight: '56.25vw',
           transform: 'translate(-50%, -50%)',
         }}>
           <iframe
-            src="https://player.vimeo.com/video/1213567493?badge=0&autopause=0&player_id=0&app_id=58479&autoplay=1&muted=1&loop=1&background=1"
+            src={`https://www.youtube.com/embed/${YT_ID}?autoplay=1&mute=1&loop=1&playlist=${YT_ID}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1&fs=0&playsinline=1`}
             frameBorder="0"
-            allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
+            allow="autoplay; fullscreen"
+            allowFullScreen
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-            title="MODEL 01"
+            title="Kiswa Hero"
           />
         </div>
       </div>
@@ -50,8 +47,6 @@ export default function Slider() {
           Explore Our Collections
         </div>
       </div>
-
-      <Script src="https://player.vimeo.com/api/player.js" strategy="lazyOnload" />
     </Link>
   )
 }
