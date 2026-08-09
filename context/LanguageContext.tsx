@@ -21,7 +21,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     setIsMounted(true)
     // Load saved language preference
     const saved = localStorage.getItem('language') as Language | null
-    const initialLang = (saved === 'ar' || saved === 'en') ? saved : 'ar' // Default to Arabic if KSA
+    const initialLang = (saved === 'ar' || saved === 'en') ? saved : 'en' // Default to English
     setLanguageState(initialLang)
     document.documentElement.lang = initialLang
     document.documentElement.dir = initialLang === 'ar' ? 'rtl' : 'ltr'
