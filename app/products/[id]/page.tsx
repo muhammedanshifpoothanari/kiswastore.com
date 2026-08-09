@@ -104,8 +104,32 @@ export default function ProductDetailPage() {
   if (loading) return <div className="p-12 text-center text-gray-500">Loading product details...</div>
   if (!product) return <div className="p-12 text-center text-gray-500">Product not found</div>
 
+  // Generate dynamic JSON-LD Structured Data for ChatGPT
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.nameStr || product.name?.en || product.name,
+    image: product.image ? `https://kiswastore.com${product.image}` : undefined,
+    description: product.descriptionStr || product.description?.en || product.description,
+    brand: {
+      '@type': 'Brand',
+      name: 'Kiswa'
+    },
+    offers: {
+      '@type': 'Offer',
+      price: product.price,
+      priceCurrency: 'SAR',
+      availability: product.inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      url: `https://kiswastore.com/products/${product.id || product.slug}`
+    }
+  }
+
   return (
     <div className="w-full bg-white min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Header />
       
       {/* Breadcrumb */}

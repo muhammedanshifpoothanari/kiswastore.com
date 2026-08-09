@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+Disallow: /checkout
+Disallow: /cart
+Disallow: /admin
+Disallow: /api/
+
+# Explicitly invite AI search crawlers to scan product details
+User-agent: GPTBot
+Allow: /
+Disallow: /checkout
+Disallow: /cart
+Disallow: /api/
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /checkout
+Disallow: /cart
+Disallow: /api/
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://kiswastore.com/sitemap.xml
