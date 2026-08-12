@@ -151,7 +151,7 @@ export default function WhatsAppWidget() {
       : `Hey, Salam Alaikum! I am visiting your website. (Browsing page: ${pageUrl})`
       
     const whatsappMessage = encodeURIComponent(defaultText)
-    const phoneNumber = '966501234567' 
+    const phoneNumber = '966548608504' 
     window.open(`https://wa.me/${phoneNumber}?text=${whatsappMessage}`, '_blank')
   }
 
