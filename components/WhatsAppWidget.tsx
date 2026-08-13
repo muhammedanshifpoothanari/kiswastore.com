@@ -143,12 +143,9 @@ export default function WhatsAppWidget() {
   }, [pathname, isArabic])
 
   const handleSendMessage = () => {
-    // Get full URL if possible, otherwise use pathname
-    const pageUrl = typeof window !== 'undefined' ? window.location.href : pathname
-    
     const defaultText = isArabic 
-      ? `السلام عليكم! أنا أتصفح موقعكم من صفحة: ${pageUrl}\nأحتاج إلى مساعدة.`
-      : `Hey, Salam Alaikum! I am visiting your website. (Browsing page: ${pageUrl})`
+      ? `السلام عليكم! أنا أتصفح موقعكم. أحتاج إلى مساعدة.`
+      : `Hey, Salam Alaikum! I am visiting your website.`
       
     const whatsappMessage = encodeURIComponent(defaultText)
     const phoneNumber = '966548608504' 

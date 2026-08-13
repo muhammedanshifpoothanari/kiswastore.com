@@ -10,7 +10,8 @@ export const metadata: Metadata = {
   description: 'Kiswa offers premium quality Islamic products, prayer mats, camping essentials, and elegant home furnishings. All the way from Makkah.',
   icons: {
     icon: [
-      { url: '/favicon.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', sizes: '512x512', type: 'image/png' },
       { url: '/icon.png', sizes: '192x192', type: 'image/png' }
     ],
     apple: [
