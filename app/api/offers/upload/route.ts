@@ -60,27 +60,19 @@ export async function POST(request: NextRequest) {
         url: resData.secure_url || resData.url,
       })
     } else {
-      // Fallback: Save to local public folder and warn
+      // Fallback: Convert buffer to Base64 Data URL and warn.
+      // This is a bulletproof fallback that works in read-only serverless environments like Vercel
+      // without needing filesystem write permissions, saving the image inline in MongoDB.
       console.warn(
-        '⚠️ CLOUDINARY credentials are not configured. Falling back to local public upload. Update .env.local with CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.'
+        '⚠️ CLOUDINARY credentials are not configured. Falling back to Base64 Data URL storage. Update .env.local with CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET.'
       )
 
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true })
-      }
-
-      const fileExtension = file.name.split('.').pop() || 'jpg'
-      const uniqueFilename = `bill_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 9)}.${fileExtension}`
-      const filePath = path.join(uploadDir, uniqueFilename)
-
-      fs.writeFileSync(filePath, new Uint8Array(buffer))
+      const base64Data = buffer.toString('base64')
+      const dataUrl = `data:${file.type || 'image/jpeg'};base64,${base64Data}`
 
       return NextResponse.json({
         success: true,
-        url: `/uploads/${uniqueFilename}`,
+        url: dataUrl,
       })
     }
   } catch (error: any) {
