@@ -14,9 +14,24 @@ export async function POST(request: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer())
 
     // Check Cloudinary environment variables
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME
-    const apiKey = process.env.CLOUDINARY_API_KEY
-    const apiSecret = process.env.CLOUDINARY_API_SECRET
+    let cloudName = process.env.CLOUDINARY_CLOUD_NAME
+    let apiKey = process.env.CLOUDINARY_API_KEY
+    let apiSecret = process.env.CLOUDINARY_API_SECRET
+
+    // Parse CLOUDINARY_URL if present and individual variables are missing
+    if (process.env.CLOUDINARY_URL && (!cloudName || !apiKey || !apiSecret)) {
+      try {
+        const url = process.env.CLOUDINARY_URL
+        const match = url.match(/cloudinary:\/\/([^:]+):([^@]+)@(.+)/)
+        if (match) {
+          apiKey = match[1]
+          apiSecret = match[2]
+          cloudName = match[3]
+        }
+      } catch (e) {
+        console.error('Failed to parse CLOUDINARY_URL', e)
+      }
+    }
 
     if (cloudName && apiKey && apiSecret) {
       // Perform signed upload to Cloudinary via REST API
