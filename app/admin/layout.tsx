@@ -16,7 +16,8 @@ import {
   Package,
   Grid,
   AlertTriangle,
-  FileText
+  FileText,
+  Gift
 } from 'lucide-react'
 
 const navigation = [
@@ -30,7 +31,9 @@ const navigation = [
   { name: 'Customers', href: '/admin/customers', icon: Users },
   { name: 'Subscribers', href: '/admin/subscribers', icon: Mail },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { name: 'Offer Claims', href: '/admin/offers', icon: Gift },
 ]
+
 
 export default function AdminLayout({
   children,

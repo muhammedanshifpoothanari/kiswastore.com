@@ -231,3 +231,28 @@ export interface DashboardStats {
   topProducts: { productId: string; productName: string; totalSold: number }[]
   ordersByStatus: Record<OrderStatus, number>
 }
+
+// ---------------------------------------------------------------------------
+// QR Scan & Win Offer Submissions
+// ---------------------------------------------------------------------------
+export type OfferSubmissionStatus = 'pending' | 'approved' | 'rejected'
+
+export interface OfferSubmission {
+  _id?: ObjectId
+  qrId: string              // Scanned QR code identifier (e.g. "qr-mats-01")
+  billImageUrl: string      // Cloudinary image URL or local fallback URL
+  customerName: string
+  customerPhone: string
+  shippingAddress: {
+    street: string
+    city: string
+    state?: string
+    postCode?: string
+    country: string
+  }
+  status: OfferSubmissionStatus
+  createdAt: Date
+  updatedAt: Date
+  verifiedAt?: Date
+}
+
