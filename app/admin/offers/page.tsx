@@ -90,6 +90,18 @@ export default function AdminOffersPage() {
   const [campaignSubmitError, setCampaignSubmitError] = useState<string | null>(null)
   const [isSubmittingCampaign, setIsSubmittingCampaign] = useState(false)
 
+  // Claim Edit Modal state
+  const [isEditClaimModalOpen, setIsEditClaimModalOpen] = useState(false)
+  const [editClaimSubmission, setEditClaimSubmission] = useState<OfferSubmission | null>(null)
+  const [editClaimName, setEditClaimName] = useState('')
+  const [editClaimPhone, setEditClaimPhone] = useState('')
+  const [editClaimStreet, setEditClaimStreet] = useState('')
+  const [editClaimCity, setEditClaimCity] = useState('')
+  const [editClaimPostCode, setEditClaimPostCode] = useState('')
+  const [editClaimCountry, setEditClaimCountry] = useState('Saudi Arabia')
+  const [editClaimSubmitError, setEditClaimSubmitError] = useState<string | null>(null)
+  const [isSavingClaimDetails, setIsSavingClaimDetails] = useState(false)
+
   // Clipboard copies
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -155,6 +167,10 @@ export default function AdminOffersPage() {
         if (selectedSubmission?._id === id) {
           setSelectedSubmission(prev => prev ? { ...prev, status: newStatus } : null)
         }
+        // If approved, refresh the page submissions data to verify database changes
+        if (newStatus === 'approved') {
+          fetchSubmissions()
+        }
       } else {
         alert(data.error || 'Failed to update status')
       }
@@ -182,6 +198,97 @@ export default function AdminOffersPage() {
     } catch (err) {
       console.error(err)
       alert('Network error deleting claim')
+    }
+  }
+
+  // Open edit modal for customer claim
+  const openEditClaim = (sub: OfferSubmission) => {
+    setEditClaimSubmission(sub)
+    setEditClaimName(sub.customerName)
+    setEditClaimPhone(sub.customerPhone)
+    setEditClaimStreet(sub.shippingAddress.street)
+    setEditClaimCity(sub.shippingAddress.city)
+    setEditClaimPostCode(sub.shippingAddress.postCode || '')
+    setEditClaimCountry(sub.shippingAddress.country)
+    setEditClaimSubmitError(null)
+    setIsEditClaimModalOpen(true)
+  }
+
+  // Save edited customer claim details
+  const handleSaveClaimDetails = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!editClaimSubmission) return
+    if (!editClaimName || !editClaimPhone || !editClaimStreet || !editClaimCity || !editClaimCountry) {
+      setEditClaimSubmitError('Please fill in all required fields.')
+      return
+    }
+
+    setIsSavingClaimDetails(true)
+    setEditClaimSubmitError(null)
+
+    try {
+      const payload = {
+        customerName: editClaimName.trim(),
+        customerPhone: editClaimPhone.trim(),
+        shippingAddress: {
+          street: editClaimStreet.trim(),
+          city: editClaimCity.trim(),
+          postCode: editClaimPostCode.trim(),
+          country: editClaimCountry.trim()
+        }
+      }
+
+      const res = await fetch(`/api/offers/${editClaimSubmission._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Failed to update claim details')
+      }
+
+      // Update submissions list locally
+      setSubmissions(prev => prev.map(sub => 
+        sub._id === editClaimSubmission._id 
+          ? { 
+              ...sub, 
+              customerName: editClaimName.trim(),
+              customerPhone: editClaimPhone.trim(),
+              shippingAddress: {
+                street: editClaimStreet.trim(),
+                city: editClaimCity.trim(),
+                postCode: editClaimPostCode.trim(),
+                country: editClaimCountry.trim()
+              }
+            }
+          : sub
+      ))
+
+      // Also update selectedSubmission if lightbox was open
+      if (selectedSubmission?._id === editClaimSubmission._id) {
+        setSelectedSubmission(prev => prev ? {
+          ...prev,
+          customerName: editClaimName.trim(),
+          customerPhone: editClaimPhone.trim(),
+          shippingAddress: {
+            street: editClaimStreet.trim(),
+            city: editClaimCity.trim(),
+            postCode: editClaimPostCode.trim(),
+            country: editClaimCountry.trim()
+          }
+        } : null)
+      }
+
+      setIsEditClaimModalOpen(false)
+      setEditClaimSubmission(null)
+    } catch (err: any) {
+      console.error(err)
+      setEditClaimSubmitError(err.message || 'Failed to save edits.')
+    } finally {
+      setIsSavingClaimDetails(false)
     }
   }
 
@@ -670,6 +777,13 @@ export default function AdminOffersPage() {
                           </button>
                         )}
                         <button
+                          onClick={() => openEditClaim(sub)}
+                          className="p-1.5 text-gray-400 hover:text-amber-600 border border-transparent hover:border-amber-200 hover:bg-amber-50 rounded-lg transition"
+                          title="Edit Claim details"
+                        >
+                          <Edit3 size={15} />
+                        </button>
+                        <button
                           onClick={() => handleDeleteClaim(sub._id)}
                           className="p-1.5 text-gray-400 hover:text-red-500 rounded-md transition"
                         >
@@ -951,6 +1065,13 @@ export default function AdminOffersPage() {
                   </button>
                 )}
                 <button
+                  onClick={() => openEditClaim(selectedSubmission)}
+                  className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-xl text-xs shadow-sm transition flex items-center justify-center gap-1.5 active:scale-95"
+                >
+                  <Edit3 size={13} />
+                  Edit Customer Details
+                </button>
+                <button
                   onClick={() => handleDeleteClaim(selectedSubmission._id)}
                   className="w-full border border-red-200 hover:bg-red-50 text-red-600 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1"
                 >
@@ -1143,6 +1264,154 @@ export default function AdminOffersPage() {
                     </>
                   ) : (
                     'Save Campaign'
+                  )}
+                </button>
+              </div>
+
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT CLAIM MODAL */}
+      {isEditClaimModalOpen && editClaimSubmission && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 transition-opacity">
+          <div className="absolute inset-0 cursor-default" onClick={() => { setIsEditClaimModalOpen(false); setEditClaimSubmission(null); }} />
+
+          <div className="bg-white rounded-2xl p-6 md:p-8 w-full max-w-md relative z-10 shadow-2xl animate-[scaleUp_0.15s_ease-out]">
+            <button 
+              onClick={() => { setIsEditClaimModalOpen(false); setEditClaimSubmission(null); }}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
+            >
+              <XCircle size={22} />
+            </button>
+
+            <h2 className="text-xl font-bold text-gray-900 border-b border-gray-100 pb-3 mb-5">
+              Edit Customer Details
+            </h2>
+
+            <form onSubmit={handleSaveClaimDetails} className="space-y-4">
+              
+              {/* Customer Name */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Customer Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editClaimName}
+                  onChange={(e) => setEditClaimName(e.target.value)}
+                  placeholder="Customer Name"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-300 outline-none text-xs bg-gray-50 focus:bg-white focus:border-[#2d5f4f] focus:ring-1 focus:ring-[#2d5f4f] transition"
+                  required
+                />
+              </div>
+
+              {/* Customer Phone */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Mobile Number / Phone <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editClaimPhone}
+                  onChange={(e) => setEditClaimPhone(e.target.value)}
+                  placeholder="e.g. +966 50 123 4567"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-300 outline-none text-xs bg-gray-50 focus:bg-white focus:border-[#2d5f4f] focus:ring-1 focus:ring-[#2d5f4f] transition"
+                  required
+                />
+              </div>
+
+              {/* Shipping Address - Street */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Street Address <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={editClaimStreet}
+                  onChange={(e) => setEditClaimStreet(e.target.value)}
+                  placeholder="Street and house number"
+                  rows={2}
+                  className="w-full px-4 py-2 rounded-xl border border-gray-300 outline-none text-xs bg-gray-50 focus:bg-white focus:border-[#2d5f4f] focus:ring-1 focus:ring-[#2d5f4f] transition resize-none"
+                  required
+                />
+              </div>
+
+              {/* Shipping Address - City & Post Code */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    City <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={editClaimCity}
+                    onChange={(e) => setEditClaimCity(e.target.value)}
+                    placeholder="e.g. Riyadh"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 outline-none text-xs bg-gray-50 focus:bg-white focus:border-[#2d5f4f] focus:ring-1 focus:ring-[#2d5f4f] transition"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Postal Code
+                  </label>
+                  <input
+                    type="text"
+                    value={editClaimPostCode}
+                    onChange={(e) => setEditClaimPostCode(e.target.value)}
+                    placeholder="Optional"
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 outline-none text-xs bg-gray-50 focus:bg-white focus:border-[#2d5f4f] focus:ring-1 focus:ring-[#2d5f4f] transition"
+                  />
+                </div>
+              </div>
+
+              {/* Shipping Address - Country */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Country <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={editClaimCountry}
+                  onChange={(e) => setEditClaimCountry(e.target.value)}
+                  placeholder="e.g. Saudi Arabia"
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-300 outline-none text-xs bg-gray-50 focus:bg-white focus:border-[#2d5f4f] focus:ring-1 focus:ring-[#2d5f4f] transition"
+                  required
+                />
+              </div>
+
+              {editClaimSubmitError && (
+                <p className="text-xs text-red-500 font-semibold text-center bg-red-50 border border-red-100 py-2.5 px-3 rounded-lg">
+                  {editClaimSubmitError}
+                </p>
+              )}
+
+              {/* Form buttons */}
+              <div className="grid grid-cols-2 gap-2 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => { setIsEditClaimModalOpen(false); setEditClaimSubmission(null); }}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 py-2.5 px-4 rounded-xl text-xs font-bold transition text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingClaimDetails}
+                  className={`py-2.5 px-4 rounded-xl text-white font-bold text-xs shadow-sm transition flex items-center justify-center gap-1.5 ${
+                    isSavingClaimDetails 
+                      ? 'bg-gray-300 cursor-not-allowed'
+                      : 'bg-[#2d5f4f] hover:bg-[#22483c] active:scale-95'
+                  }`}
+                >
+                  {isSavingClaimDetails ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Details'
                   )}
                 </button>
               </div>
