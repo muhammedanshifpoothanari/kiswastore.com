@@ -167,10 +167,12 @@ export default function OfferPage({ params }: PageProps) {
     setIsSpinning(true)
     setShowWinMessage(false)
 
-    // Calculate rotation to land exactly in the middle of sector 3
-    // Formula: 360 * number_of_spins + angle_for_sector_3 (150 degrees)
+    // Calculate rotation to land inside sector 3 (winning prize)
+    // Sector 3 spans 120 to 180 degrees rotationally. Center is 150.
+    // Adding a slight random offset (between -12 and +12) makes it land organically off-center!
     const totalSpins = 6
-    const targetRotation = 360 * totalSpins + 150
+    const randomOffset = Math.floor(Math.random() * 24) - 12
+    const targetRotation = 360 * totalSpins + 150 + randomOffset
     setRotation(targetRotation)
 
     setTimeout(() => {
@@ -180,7 +182,7 @@ export default function OfferPage({ params }: PageProps) {
       
       // Stop confetti after 5 seconds
       setTimeout(() => setTriggerConfetti(false), 5000)
-    }, 4500) // matches transition duration
+    }, 5000) // matches transition duration (5s)
   }
 
   // Handle shipping details submit
@@ -268,8 +270,8 @@ export default function OfferPage({ params }: PageProps) {
             x={tx}
             y={ty}
             fill="#ffffff"
-            fontSize="5.5"
-            fontWeight="bold"
+            fontSize="7.5"
+            fontWeight="900"
             textAnchor="middle"
             transform={`rotate(${textAngle + 90}, ${tx}, ${ty})`}
           >
@@ -470,27 +472,55 @@ export default function OfferPage({ params }: PageProps) {
                   </p>
 
                   {/* Wheel Container */}
-                  <div className="relative mb-8 flex items-center justify-center">
-                    {/* Pointer */}
-                    <div className="absolute top-[-8px] z-20 w-0 h-0 border-l-[12px] border-r-[12px] border-t-[20px] border-l-transparent border-r-transparent border-t-[#d97706] filter drop-shadow-md" />
+                  <div className="relative mb-10 flex items-center justify-center h-[280px] w-[280px] md:h-[360px] md:w-[360px]">
                     
-                    {/* Outer decorative ring */}
-                    <div className="absolute h-[272px] w-[272px] md:h-[352px] md:w-[352px] rounded-full border-4 border-amber-500 bg-[#8c763e]/5 animate-pulse" />
-
-                    {/* SVG Wheel */}
+                    {/* Golden Pointer (Center-Aligned at Top, Overlapping the Wheel) */}
                     <div 
-                      className="h-[256px] w-[256px] md:h-[336px] md:w-[336px] rounded-full shadow-2xl border-4 border-amber-500 overflow-hidden relative bg-white transition-transform ease-out"
-                      style={{ 
-                        transform: `rotate(${rotation}deg)`,
-                        transitionDuration: '4.5s',
-                      }}
-                    >
-                      <svg viewBox="0 0 200 200" className="w-full h-full">
-                        {renderWheelSlices()}
-                        {/* Inner gold hub */}
-                        <circle cx="100" cy="100" r="14" fill="#8c763e" stroke="#ffffff" strokeWidth="1.5" />
-                        <circle cx="100" cy="100" r="6" fill="#1a1a1a" />
+                      className="absolute top-[-16px] left-1/2 -translate-x-1/2 z-30 w-0 h-0 border-l-[14px] border-r-[14px] border-t-[24px] border-l-transparent border-r-transparent border-t-amber-500 filter drop-shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+                    />
+
+                    {/* Outer Ring with Static Chasing Marquee Lights */}
+                    <div className="absolute inset-0 rounded-full border-[10px] border-[#8c763e] bg-[#1a1a1a] shadow-2xl flex items-center justify-center">
+                      
+                      {/* Spinning Wheel */}
+                      <div 
+                        className="h-[236px] w-[236px] md:h-[312px] md:w-[312px] rounded-full overflow-hidden relative bg-white"
+                        style={{ 
+                          transform: `rotate(${rotation}deg)`,
+                          transition: isSpinning ? 'transform 5s cubic-bezier(0.1, 0.8, 0.1, 1)' : 'none',
+                        }}
+                      >
+                        <svg viewBox="0 0 200 200" className="w-full h-full">
+                          {renderWheelSlices()}
+                          {/* Inner gold hub */}
+                          <circle cx="100" cy="100" r="14" fill="#8c763e" stroke="#ffffff" strokeWidth="1.5" />
+                          <circle cx="100" cy="100" r="6" fill="#1a1a1a" />
+                        </svg>
+                      </div>
+
+                      {/* Static Chasing Light Bulbs SVG Overlay */}
+                      <svg viewBox="0 0 200 200" className="absolute inset-0 w-full h-full pointer-events-none z-20">
+                        {/* Inner light ring guide */}
+                        <circle cx="100" cy="100" r="95.5" fill="none" stroke="#b59d5b" strokeWidth="1.5" opacity="0.3" />
+                        
+                        {/* 24 Light Bulbs (Odd and Even blink out-of-phase) */}
+                        {[...Array(24)].map((_, i) => {
+                          const angle = (i * 15 * Math.PI) / 180
+                          const cx = 100 + 95.5 * Math.cos(angle)
+                          const cy = 100 + 95.5 * Math.sin(angle)
+                          return (
+                            <circle
+                              key={i}
+                              cx={cx}
+                              cy={cy}
+                              r="1.8"
+                              fill={i % 2 === 0 ? '#fbbf24' : '#ffffff'}
+                              className={i % 2 === 0 ? 'animate-[pulse_0.5s_infinite_alternate]' : 'animate-[pulse_0.5s_infinite_alternate_0.25s]'}
+                            />
+                          )
+                        })}
                       </svg>
+
                     </div>
                   </div>
 
