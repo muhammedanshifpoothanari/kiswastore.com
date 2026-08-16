@@ -19,7 +19,8 @@ import {
   Printer, 
   Edit3, 
   Check, 
-  Globe 
+  Globe,
+  Gift
 } from 'lucide-react'
 
 interface ShippingAddress {
