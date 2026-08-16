@@ -256,3 +256,17 @@ export interface OfferSubmission {
   verifiedAt?: Date
 }
 
+// ---------------------------------------------------------------------------
+// QR Scan & Win Campaign Configuration
+// ---------------------------------------------------------------------------
+export interface CampaignOffer {
+  _id?: ObjectId
+  offerId: string           // Unique campaign code used in dynamic URL (e.g. "ramadan-mats")
+  title: string             // Friendly display title of the campaign
+  giftName: string          // The attached gift product name (e.g. "Sponge Prayer Mat")
+  isActive: boolean         // Active status of the offer
+  createdAt: Date
+  updatedAt: Date
+}
+
+
