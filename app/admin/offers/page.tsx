@@ -20,7 +20,8 @@ import {
   Edit3, 
   Check, 
   Globe,
-  Gift
+  Gift,
+  Loader2
 } from 'lucide-react'
 
 interface ShippingAddress {
@@ -137,7 +138,7 @@ export default function AdminOffersPage() {
   }, [])
 
   // Claim status updates (Approve / Reject)
-  const handleUpdateClaimStatus = async (id: string, newStatus: 'approved' | 'rejected') => {
+  const handleUpdateClaimStatus = async (id: string, newStatus: 'pending' | 'approved' | 'rejected') => {
     try {
       const res = await fetch(`/api/offers/${id}`, {
         method: 'PUT',

@@ -61,7 +61,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       // If we are changing the offerId, verify that the new one is unique
       const existing = await collection.findOne({
         offerId: cleanOfferId,
-        _id: { $ne: ObjectId.isValid(id) ? new ObjectId(id) : null }
+        _id: { $ne: ObjectId.isValid(id) ? new ObjectId(id) : undefined }
       })
       if (existing) {
         return NextResponse.json({
