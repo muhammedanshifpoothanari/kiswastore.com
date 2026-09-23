@@ -10,6 +10,9 @@ import ProductGrid from '@/components/ProductGrid'
 import Testimonials from '@/components/Testimonials'
 import Footer from '@/components/Footer'
 import VideoSection from '@/components/VideoSection'
+import ComboOffer from '@/components/ComboOffer'
+import MemoryFoamOffer from '@/components/MemoryFoamOffer'
+import ExclusiveOffer from '@/components/ExclusiveOffer'
 import { useLanguage } from '@/hooks/useLanguage'
 import { getProductsByCategoryId } from '@/data/products'
 
@@ -71,6 +74,13 @@ export default function Home() {
 
       <main className="pb-16">
         <InstaStoryBar />
+
+        {/* Exclusive Offer: Kiswa National Day Deals */}
+        <ExclusiveOffer />
+
+        {/* Hidden: old individual offer sections */}
+        {/* <ComboOffer /> */}
+        {/* <MemoryFoamOffer /> */}
 
         {/* Section 1: Prayer Mats */}
         <ProductGrid
