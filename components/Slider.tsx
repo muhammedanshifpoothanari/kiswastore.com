@@ -72,7 +72,7 @@ export default function Slider() {
         style={{ zIndex: 2, opacity: showVideo ? 0 : 1 }}
       >
         <Image
-          src="/kiswa-hero-banner.png"
+          src="/banners/_Saudi National Day Instagram (1).png"
           alt="Kiswa – Premium Islamic Home Decor"
           fill
           className="object-cover"
